@@ -1,0 +1,7 @@
+title: "pRESTO Report: MiSeq_run00_full"
+author: "Eric Waltari"
+version: "0.5.4"
+description: "initial MiSeq run"
+sample: "BX"
+run: "MiSeq_00"
+date: "03132018"
