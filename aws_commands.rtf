@@ -6,9 +6,9 @@ AWS commands:
 aegea launch waltari-immcantation --ami-tags Name=czbiohub-specops --iam-role S3fromEC2 -t m4.4xlarge
 aegea ssh ubuntu@waltari-immcantation
 
-To stop:
+## To stop:
 aegea stop waltari-immcantation
-To restart
+## To restart
 aegea start waltari-immcantation
 
 ## FYI: after restarting your Mac, YOU WILL NOT BE ABLE TO USE aegea start (name)
@@ -16,7 +16,7 @@ aegea start waltari-immcantation
 ## also note every time you stop and restart, the long address name changes!
 
 ## so this works on my Mac:
-ssh -i .ssh/aegea.launch.eric.waltari.waltari-mbp.pem ubuntu@xxx.us-west-2.compute.amazonaws.com
+ssh -i .ssh/aegea.launch.eric.waltari.waltari-mbp.pem ubuntu@XXX.us-west-2.compute.amazonaws.com
 
 ## to get full name - go to 
 https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:sort=keyName
