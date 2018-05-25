@@ -97,13 +97,14 @@ docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/pres
 
 ## when each run is done (preferably before final step of zipping most intermediate files), transfer files back to s3
   ## three fastq outputs, and the .pdf report
+  ## examples:
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_atleast-5.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_atleast-5.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_total.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_total.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/report/MiSeq_apr_BX_full5_04272018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/MiSeq_apr_BX_full5_04272018.pdf
 
 
-## also note when a run is done, the remaining fastqs are not gzipped - also in /logs folder, .tab files are not zipped either...
+## note when a run is done, the remaining fastqs are not gzipped - also in /logs folder, .tab files are not zipped either
 gzip *.fastq
 gzip *.tab
 
@@ -132,7 +133,7 @@ docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/imm
 
 
 ————
-## NOTE FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
+## FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/moreINFandAD2.fasta -n moreInfAandAD2 -o /data -p 4 | tee run_igblast.out
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 shazam-threshold -d /data/moreInfAandAD2_parse-select.tab -n moreInfAandAD2 -o /data -p 4 | tee run_threshold.out
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/moreInfAandAD2_parse-select.tab -x 0.0396 -n moreInfAandAD2 -o /data -p 4 | tee run_clone.out
