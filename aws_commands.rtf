@@ -44,30 +44,26 @@ docker images
 https://github.com/IronicBadger/til/blob/master/docker/change-docker-root.md
 ## then restart docker
 
-
 ————
+### TRANSFER FILES FROM S3
+## first need to configure aws:
+aws configure
+
+## basic: create directories you need
+mkdir mnt/data/presto
+
+## basic: type all aws commands from root directory before running
+
+## transferring base scripts, some initial .yaml files and unzipped fastqs from first MiSeq runs:
 
 
+## example to transfer one MiSeq run to aegea instance
+aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180128_M05295_0078_000000000-BJNBT/rawdata/presto/ /mnt/data/presto
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-————
-
-
-
+## basic: also unzip fastq.gz files - this works using aegea instance btw…
+gunzip *fastq.gz
+## basic: make sure to set chmod for scripts
+chmod a+x *.sh
 
 
 
@@ -80,6 +76,24 @@ https://github.com/IronicBadger/til/blob/master/docker/change-docker-root.md
 
 
 ————
+### DOCKER COMMANDS
+docker pull kleinstein/immcantation:1.10.0 
+## MID MARCH 1.7.0 APRIL 1.8.0, LATE APRIL 1.9.0, Late May 1.10.0
+
+## basic: first go to root directory before running docker
+cd ..
+cd ..
+cd ..
+
+## to get docker shell to see files on Aegea:
+docker run -it -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 bash
+## or to get to docker shell to see files locally
+docker run -it -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 bash
+## use to make sure that all files are where they should be (check /data and /usr/local/share folders are also there)
+
+## also to check Docker runs, and stop if necessary
+docker ps                 # get the id of the running container
+docker stop <containerid> # kill it (gracefully)
 
 
-
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/Undetermined_S0_L001_R2_001.fastq -2 /data/Undetermined_S0_L001_R1_001.fastq -j /data/primers_R2c.fasta -v data/primers_R1.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/apr18_full.yaml -n BXjan5 -o /data/BXjan_filter5 -p 16 | sudo tee run_presto.out
