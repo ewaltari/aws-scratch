@@ -132,18 +132,16 @@ docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/imm
 
 
 ————
-## NOTE FOR MAKING NETWORKS THAT INCLUDE SINGLE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
+## NOTE FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/moreINFandAD2.fasta -n moreInfAandAD2 -o /data -p 4 | tee run_igblast.out
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 shazam-threshold -d /data/moreInfAandAD2_parse-select.tab -n moreInfAandAD2 -o /data -p 4 | tee run_threshold.out
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/moreInfAandAD2_parse-select.tab -x 0.0396 -n moreInfAandAD2 -o /data -p 4 | tee run_clone.out
 
 
 
-
-##############################################################
+————
 ##############################################################
 ############# SINGLE CELL TRANSCRIPTOME COMMANDS #############
-##############################################################
 ##############################################################
 
 ### 5/4 learning from James that a very easy workflow exists:
