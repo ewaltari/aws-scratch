@@ -12,14 +12,12 @@ aegea stop waltari-immcantation
 aegea start waltari-immcantation
 
 ## FYI: if after restarting your Mac, YOU MAY NOT BE ABLE TO USE aegea start (name)
-## if this happens, use ssh: point to .pem file and use ubuntu@latest.address
-## also note every time you stop and restart, the long address name changes!
-
-## so this works on my Mac:
+  ## if this happens, use ssh: point to .pem file and use ubuntu@latest.address
+  ## also note every time you stop and restart, the long address name changes!
 ssh -i .ssh/aegea.launch.eric.waltari.waltari-mbp.pem ubuntu@XXX.us-west-2.compute.amazonaws.com
-## to get full name - go to 
+  ## to get full name - go to 
 https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:sort=keyName
-## Then click on immcantation instance tab, ‘connect’, and an instruction box will pop-up with the address to use
+  ## Then click on immcantation instance tab, ‘connect’, and an instruction box will pop-up with the address to use
 
 ————
 ### INSTALLING & STARTING DOCKER
@@ -151,17 +149,19 @@ docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1
 ### 5/4 learning from James that a very easy workflow exists:
 https://github.com/czbiohub/utilities
 
+## set up utilities-env
+conda create --name utilities-env python pip
+
 #run
-180416_NB501961_0098_AHLNCFBGX5
-aws_star mus 10 YYMMDD_EXP_ID > my_star_jobs.sh
+  ## our run is here 180416_NB501961_0098_AHLNCFBGX5
+  ## example aws_star mus 10 YYMMDD_EXP_ID > my_star_jobs.sh
 ### commands
 aws_star homo 24 180416_NB501961_0098_AHLNCFBGX5 > my_star_jobs.sh
 cat my_star_jobs.sh
 source my_star_jobs.sh
 
 ## then aligning
-gene_cell_table fastqs/YYMMDD_EXP_ID YYMMDD_EXP_ID.csv --dryrun
+  ## gene_cell_table fastqs/YYMMDD_EXP_ID YYMMDD_EXP_ID.csv --dryrun
 gene_cell_table fastqs/180416_NB501961_0098_AHLNCFBGX5 180416_NB501961_0098_AHLNCFBGX5.csv
 
-##
-waltari-mbp:~ eric.waltari$ conda create --name utilities-env python pip
+
