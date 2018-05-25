@@ -98,13 +98,14 @@ docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/pres
 
 
 ## when each run is done (preferably before final step of zipping most intermediate files), transfer files back to s3
+  ## three fastq outputs, and the .pdf report
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_atleast-5.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_atleast-5.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_total.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_total.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/report/MiSeq_apr_BX_full5_04272018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/MiSeq_apr_BX_full5_04272018.pdf
 
 
-## also note when a run is done, final fastqs are not zipped - also in /logs folder, .tab files are not zipped either...
+## also note when a run is done, the remaining fastqs are not gzipped - also in /logs folder, .tab files are not zipped either...
 gzip *.fastq
 gzip *.tab
 
