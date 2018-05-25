@@ -27,13 +27,13 @@ https://us-west-2.console.aws.amazon.com/ec2/v2/home?region=us-west-2#Instances:
 
 ## install with these commands (http://ray.readthedocs.io/en/latest/install-on-docker.html)
 ## The instructions below show in detail how to prepare an Amazon EC2 instance running Ubuntu 16.04 for use with Docker. 
-## Apply initialize the package repository and apply system updates:
+## initialize the package repository and apply system updates:
 sudo apt-get update
 sudo apt-get -y dist-upgrade
 ## Install Docker and start the service:
 sudo apt-get install -y docker.io
 sudo service docker start
-## dd the ubuntu user to the docker group to allow running Docker commands without sudo:
+## add the ubuntu user to the docker group to allow running Docker commands without sudo:
 sudo usermod -a -G docker ubuntu
 
 ## Log out and log back in again…
@@ -52,14 +52,14 @@ aws configure
 mkdir mnt/data/presto
 
 ## basic: type all aws commands from root directory before running
-## transferring base scripts, some initial .yaml files and unzipped fastqs from first MiSeq runs:
+## transferring base scripts, some initial .yaml files and unzipped fastqs from first MiSeq runs (all in my s3 bucket):
 aws s3 cp --recursive s3://eric.waltari-bucket/BX_miseq/presto/ /mnt/data/presto
 
 
 ## example to transfer one MiSeq run to aegea instance
 aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180128_M05295_0078_000000000-BJNBT/rawdata/presto/ /mnt/data/presto
 
-## basic: also unzip fastq.gz files - this works using aegea instance btw…
+## basic: unzip fastq.gz files before running PRESTO
 gunzip *fastq.gz
 ## basic: make sure to set chmod for scripts
 chmod a+x *.sh
@@ -67,14 +67,11 @@ chmod a+x *.sh
 ————
 ### DOCKER COMMANDS
 docker pull kleinstein/immcantation:1.10.0 
-## MID MARCH 1.7.0 APRIL 1.8.0, LATE APRIL 1.9.0, Late May 1.10.0
+## MARCH 1.7.0, APRIL 1.8.0, LATE APRIL 1.9.0, Late May 1.10.0 (http://immcantation.readthedocs.io/en/latest/docker/news.html)
 
 ## basic: first go to root directory before running docker
-cd ..
-cd ..
-cd ..
 
-## to get docker shell to see files on Aegea:
+## to get docker shell to see files on Aegea
 docker run -it -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 bash
 ## or to get to docker shell to see files locally
 docker run -it -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 bash
@@ -92,9 +89,11 @@ docker stop <containerid> # kill it (gracefully)
 
 ## in mid-March first full run of BX MiSeq dataset
 ## in April changed primer names so can combine them (also added a line in presto-abseq.sh commands to do the combine step)
-            ## line added: ParseHeaders.py copy -s reads.fastq -f PRCONS -k PRIMER --act first
+            ## the line I added: ParseHeaders.py copy -s reads.fastq -f PRCONS -k PRIMER --act first
 ## then in mid-May noticed another primer sequence error, final versions of primers.fasta files are made between 4.27 and 5.23
 
+
+## DOCKER COMMAND TO RUN PRESTO IN AEGEA
 docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/Undetermined_S0_L001_R2_001.fastq -2 /data/Undetermined_S0_L001_R1_001.fastq -j /data/primers_R2c.fasta -v data/primers_R1.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/apr18_full.yaml -n BXjan5 -o /data/BXjan_filter5 -p 16 | sudo tee run_presto.out
 
 
@@ -110,6 +109,58 @@ gzip *.fastq
 gzip *.tab
 
 ————
-## SECOND STEP OF IMMCANTATION: CHANGEO
+## SECOND STEPS OF IMMCANTATION: CHANGEO
+## STEP 2A: IGBLAST
+  ## this script includes creating germlines and parsing only functional (example scripts break this into 3 parts)
+## running locally:
+  ## first put BX-final_collapse-unique_atleast-5.fastq into your folder
+  ## first run bash in container to make sure  /usr/local/share/germlines/imgt/human/vdj has IMGT-gapped reference germlines!!
+  ## 750k reads takes 3.5 hours
+docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXapr5-final_collapse-unique_atleast-5.fastq -n BXapr -o /data -p 4 | tee run_igblast.out
+
+## STEP 2B: INFERENCE OF V SEGMENT GENOTYPES (TIGGER)
+     ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
+TiggerV2.10_Genotype.R
+
+## STEP 2C: CLONAL ASSIGNMENT THRESHOLDING
+    ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
+    ## R script of full dataset = 1 hour for db step, ~2 more hours for threshold step
+ShazamV1.10Distance.R
+
+### STEP2D: CLONAL ASSIGNMENT
+  # FIRST GET THRESHOLD (then add to -x below) FROM STEP 2C
+docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BX_genotyped5t.tab -x 0.0692 -n BX -o /data -p 4 | tee run_clone.out
 
 
+————
+## NOTE FOR MAKING NETWORKS THAT INCLUDE SINGLE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
+docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/moreINFandAD2.fasta -n moreInfAandAD2 -o /data -p 4 | tee run_igblast.out
+docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 shazam-threshold -d /data/moreInfAandAD2_parse-select.tab -n moreInfAandAD2 -o /data -p 4 | tee run_threshold.out
+docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/moreInfAandAD2_parse-select.tab -x 0.0396 -n moreInfAandAD2 -o /data -p 4 | tee run_clone.out
+
+
+
+
+##############################################################
+##############################################################
+############# SINGLE CELL TRANSCRIPTOME COMMANDS #############
+##############################################################
+##############################################################
+
+### 5/4 learning from James that a very easy workflow exists:
+https://github.com/czbiohub/utilities
+
+#run
+180416_NB501961_0098_AHLNCFBGX5
+aws_star mus 10 YYMMDD_EXP_ID > my_star_jobs.sh
+### commands
+aws_star homo 24 180416_NB501961_0098_AHLNCFBGX5 > my_star_jobs.sh
+cat my_star_jobs.sh
+source my_star_jobs.sh
+
+## then aligning
+gene_cell_table fastqs/YYMMDD_EXP_ID YYMMDD_EXP_ID.csv --dryrun
+gene_cell_table fastqs/180416_NB501961_0098_AHLNCFBGX5 180416_NB501961_0098_AHLNCFBGX5.csv
+
+##
+waltari-mbp:~ eric.waltari$ conda create --name utilities-env python pip
