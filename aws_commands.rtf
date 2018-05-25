@@ -48,13 +48,12 @@ https://github.com/IronicBadger/til/blob/master/docker/change-docker-root.md
 ### TRANSFER FILES FROM S3
 ## first need to configure aws:
 aws configure
-
 ## basic: create directories you need
 mkdir mnt/data/presto
 
 ## basic: type all aws commands from root directory before running
-
 ## transferring base scripts, some initial .yaml files and unzipped fastqs from first MiSeq runs:
+aws s3 cp --recursive s3://eric.waltari-bucket/BX_miseq/presto/ /mnt/data/presto
 
 
 ## example to transfer one MiSeq run to aegea instance
@@ -64,16 +63,6 @@ aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180128_M05295_0078_000000000-B
 gunzip *fastq.gz
 ## basic: make sure to set chmod for scripts
 chmod a+x *.sh
-
-
-
-
-
-
-
-
-
-
 
 ————
 ### DOCKER COMMANDS
@@ -95,5 +84,32 @@ docker run -it -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantati
 docker ps                 # get the id of the running container
 docker stop <containerid> # kill it (gracefully)
 
+————
+## FIRST STEP OF IMMCANTATION: PRESTO
+  ## NOTE SETTINGS IN presto-abseq.sh
+  ## PRIMER THRESHOLD 0.3
+  ## IN PARTICULAR THE # OF MINIMUM BARCODES (LATEST SETTING IS 5)
+
+## in mid-March first full run of BX MiSeq dataset
+## in April changed primer names so can combine them (also added a line in presto-abseq.sh commands to do the combine step)
+            ## line added: ParseHeaders.py copy -s reads.fastq -f PRCONS -k PRIMER --act first
+## then in mid-May noticed another primer sequence error, final versions of primers.fasta files are made between 4.27 and 5.23
 
 docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/Undetermined_S0_L001_R2_001.fastq -2 /data/Undetermined_S0_L001_R1_001.fastq -j /data/primers_R2c.fasta -v data/primers_R1.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/apr18_full.yaml -n BXjan5 -o /data/BXjan_filter5 -p 16 | sudo tee run_presto.out
+
+
+## when each run is done (preferably before final step of zipping most intermediate files), transfer files back to s3
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique.fastq
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_atleast-5.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_atleast-5.fastq
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_total.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_total.fastq
+aws s3 cp /mnt/data/presto/BXapr_filter5/report/MiSeq_apr_BX_full5_04272018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/MiSeq_apr_BX_full5_04272018.pdf
+
+
+## also note when a run is done, final fastqs are not zipped - also in /logs folder, .tab files are not zipped either...
+gzip *.fastq
+gzip *.tab
+
+————
+## SECOND STEP OF IMMCANTATION: CHANGEO
+
+
