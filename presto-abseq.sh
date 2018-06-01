@@ -496,7 +496,14 @@ check_error
 printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "SplitSeq group"
 SplitSeq.py group -s "${OUTNAME}-final_collapse-unique.fastq" -f CONSCOUNT --num 5 \
     >> $PIPELINE_LOG 2> $ERROR_LOG
+## ADDING COMMAND TO GET IGG & IGA GSUBTYPES
+IGGIGA_SUBTYPES="/data/IgGIgAsubtypes.fasta"
+MaskPrimers.py align -s "${OUTNAME}-final_collapse-unique_atleast-5.fastq" -p IGGIGA_SUBTYPES --failed --maxlen 100 --maxerror 0.03 \
+    --mode tag --revpr --pf GandA_SUBTYPE
+MaskPrimers.py align -s "${OUTNAME}-final_collapse-unique.fastq" -p IGGIGA_SUBTYPES --failed --maxlen 100 --maxerror 0.03 \
+    --mode tag --revpr --pf GandA_SUBTYPE
 check_error
+
 
 
 # Create table of final repertoire
@@ -549,7 +556,7 @@ fi
 printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "Compressing files"
 LOG_FILES=$(ls ${LOGDIR}/*.log | grep -v "pipeline")
 FILTER_FILES="$(basename ${R1_READS})\|$(basename ${R2_READS})\|$(basename ${R1_PRIMERS})\|$(basename ${R2_PRIMERS})"
-FILTER_FILES+="\|final_total.fastq\|final_collapse-unique.fastq\|final_collapse-unique_atleast-5.fastq"
+FILTER_FILES+="\|final_total.fastq\|final_collapse-unique.fastq\|final_collapse-unique_atleast-5.fastq\|primers-pass.fastq\|primers-fail.fastq"
 TEMP_FILES=$(ls *.fastq | grep -v ${FILTER_FILES})
 if $ZIP_FILES; then
     tar -zcf log_files.tar.gz $LOG_FILES
