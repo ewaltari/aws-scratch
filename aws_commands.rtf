@@ -151,6 +151,11 @@ https://github.com/czbiohub/utilities
 ## set up utilities-env
 conda create --name utilities-env python pip
 
+## go to utilities-env
+source activate utilities-env
+
+git clone https://github.com/czbiohub/utilities.git
+
 #run
   ## our run is here 180416_NB501961_0098_AHLNCFBGX5
   ## example aws_star mus 10 YYMMDD_EXP_ID > my_star_jobs.sh
@@ -163,6 +168,7 @@ source my_star_jobs.sh
   ## gene_cell_table fastqs/YYMMDD_EXP_ID YYMMDD_EXP_ID.csv --dryrun
 gene_cell_table fastqs/180416_NB501961_0098_AHLNCFBGX5 180416_NB501961_0098_AHLNCFBGX5.csv
 
+## PATHWAY ANALYSES
 ## for pathway analysis: looking at AltAnalyze (stand-alone GUI)
 ## looks like it can take .tab file of gene counts and do de-novo clustering & pathway analysis...
 
@@ -171,4 +177,15 @@ gene_cell_table fastqs/180416_NB501961_0098_AHLNCFBGX5 180416_NB501961_0098_AHLN
 
 ## trying again with new .tab file taking out unassigned column...
 ## re-running at 1:30PM
+
+## also works best when comparing two groups (not de-novo clustering)
+## assigned 94/96 samples to 'Bcell', last 2 to 'control'
+
+## finding another run with transcriptome data (also Human):
+
+gene_cell_table fastqs/180223_M05295_0084_000000000-BKKMP 180223_M05295_0084_000000000-BKKMP.csv
+## didn't seem to work - instead transferring all files locally and will just combine some raw numbers...
+## didn't work because data is archived in Glacier...
+## another
+gene_cell_table fastqs/180519_NB501961_0110_AHMLH7BGX5 code/180519_NB501961.csv --dryrun
 
