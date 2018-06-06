@@ -139,6 +139,24 @@ docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/moreInfAandAD2_parse-select.tab -x 0.0396 -n moreInfAandAD2 -o /data -p 4 | tee run_clone.out
 
 
+————
+##############################################################
+
+## new command to get IgG,IgA subtypes!
+## first upload primer list
+aws s3 cp s3://eric.waltari-bucket/BX_miseq/presto/IgGIgAsubtypes.fasta /mnt/data/presto/IgGIgAsubtypes.fasta
+
+## then command from docker bash:
+docker run -it -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 bash
+
+MaskPrimers.py align -s BXtotalHmay5-final_collapse-unique_atleast-5.fastq -p IgGIgAsubtypes.fasta --failed --maxlen 100 --maxerror 0.03 --mode tag --revpr --pf IGGIGA_SUBTYPES
+
+## will also need to update script, re-upload to aegea
+aws s3 cp s3://eric.waltari-bucket/BX_miseq/presto/presto-abseq.sh /mnt/data/presto/presto-abseq.sh
+
+
+## can use the MaskPrimers.py script above also to search for single cell sequences!!
+## more to come here...
 
 ————
 ##############################################################
