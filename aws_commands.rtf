@@ -103,6 +103,16 @@ aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_atleast-5.
 aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_total.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_total.fastq
 aws s3 cp /mnt/data/presto/BXapr_filter5/report/MiSeq_apr_BX_full5_04272018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/MiSeq_apr_BX_full5_04272018.pdf
 
+  ## also now at end of script isotype information is in 2 separate files:
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_primers-pass.fastq
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_primers-fail.fastq
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_atleast-5_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_atleast-5_primers-pass.fastq
+aws s3 cp /mnt/data/presto/BXapr_filter5/BXapr5-final_collapse-unique_atleast-5_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/BXapr5-final_collapse-unique_atleast-5_primers-fail.fastq
+
+## note that it would be better to concatenate each of the *primers-pass.fastq and *primers-fail.fastq files...
+
+
+
 
 ## note when a run is done, the remaining fastqs are not gzipped - also in /logs folder, .tab files are not zipped either
 gzip *.fastq
@@ -131,6 +141,7 @@ ShazamV1.10Distance.R
   # FIRST GET THRESHOLD (then add to -x below) FROM STEP 2C
 docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BX_genotyped5t.tab -x 0.0692 -n BX -o /data -p 4 | tee run_clone.out
 
+docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BX1milPBMCHL_parse-select.tab -x 0.0724 -n BX -o /data -p 4 | tee run_clone.out
 
 ————
 ## FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
