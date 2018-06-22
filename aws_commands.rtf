@@ -128,6 +128,9 @@ gzip *.tab
   ## 750k reads takes 3.5 hours
 docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXapr5-final_collapse-unique_atleast-5.fastq -n BXapr -o /data -p 4 | tee run_igblast.out
 
+docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_withtargets.fasta -n BXapr -o /data -p 4 | tee run_igblast.out
+
+
 ## STEP 2B: INFERENCE OF V SEGMENT GENOTYPES (TIGGER)
      ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
 TiggerV2.10_Genotype.R
