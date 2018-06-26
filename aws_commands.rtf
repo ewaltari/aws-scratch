@@ -161,6 +161,21 @@ NPROC=4
 docker run -v $DATA_DIR:/data:z kleinstein/immcantation:1.10.0 \
     shazam-threshold -d $DB -n $SAMPLE_NAME -o $OUT_DIR -p $NPROC
 
+# Arguments:
+#   -d  Change-O formatted TSV (TAB) file.
+#   -m  Method.
+#       Defaults to density.
+#   -l  Model when "-m gmm" is specified.
+#       Defaults to "gamma-gamma".
+#   -n  Sample name or run identifier which will be used as the output file prefix.
+#       Defaults to a truncated version of the input filename.
+#   -o  Output directory.
+#       Defaults to current directory.
+#   -p  Number of subprocesses for multiprocessing tools.
+#       Defaults to the available processing units.
+#   -h  Display help.
+
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 shazam-threshold -d /data/BXjan5_withss_parse-select.tab -l "density" -p 16
 
 
 ### STEP2D: CLONAL ASSIGNMENT
