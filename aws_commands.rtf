@@ -130,6 +130,13 @@ docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/imm
 
 docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_atleast-2_withtargets.fasta -n BXjan2_withss -o /data -p 4 | tee run_igblast.out
 
+## on aegea
+## 
+aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5-final_collapse-unique_atleast-5_withtargets.fasta /mnt/data/changeo/BXjan5-final_collapse-unique_atleast-5_withtargets.fasta
+
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_atleast-5_withtargets.fasta -n BXjan5_withss -o /data -p 16 | tee run_igblast.out
+
+
 
 ## STEP 2B: INFERENCE OF V SEGMENT GENOTYPES (TIGGER)
      ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
@@ -139,6 +146,7 @@ TiggerV2.10_Genotype.R
     ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
     ## R script of full dataset = 1 hour for db step, ~2 more hours for threshold step
 ShazamV1.10Distance.R
+
 # should try running in docker: 
 ## option A) docker bash, then type: R > R.script --no-save
 ## option B) 
@@ -153,6 +161,8 @@ NPROC=4
 docker run -v $DATA_DIR:/data:z kleinstein/immcantation:1.10.0 \
     shazam-threshold -d $DB -n $SAMPLE_NAME -o $OUT_DIR -p $NPROC
 
+
+
 ### STEP2D: CLONAL ASSIGNMENT
   # FIRST GET THRESHOLD (then add to -x below) FROM STEP 2C
 docker run -v $HOME/immcantation_pipeline/BX_min5/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BX_genotyped5t.tab -x 0.0692 -n BX -o /data -p 4 | tee run_clone.out
@@ -166,6 +176,7 @@ aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/ChangeoV3.7_Clone.sh /mnt/da
 aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/changeoV3.7_IgBLASTV1.7.sh /mnt/data/changeo/changeoV3.7_IgBLASTV1.7.sh
 aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan2_withss_parse-select.tab /mnt/data/changeo/BXjan2_withss_parse-select.tab
 
+aws s3 cp /mnt/data/changeo/BXjan2_withss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan2_withss_clone-pass.tab 
 
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan2_withss_parse-select.tab -x 0.0347 -n BXjan2_withss -o /data -p 16 | sudo tee run_clone.out
 
