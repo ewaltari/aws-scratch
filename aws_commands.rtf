@@ -140,10 +140,13 @@ aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan2_withss_parse-s
 aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5-final_collapse-unique_atleast-5_withtargets.fasta /mnt/data/changeo/BXjan5-final_collapse-unique_atleast-5_withtargets.fasta
 aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5-final_collapse-unique_atleast-5_withtargets2.fasta /mnt/data/changeo/BXjan5-final_collapse-unique_atleast-5_withtargets2.fasta
 
+aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets.fasta /mnt/data/changeo/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets.fasta
+
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_atleast-5_withtargets.fasta -n BXjan5_withss -o /data -p 16 | sudo tee run_igblast.out
 
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_atleast-5_withtargets2.fasta -n BXjan5_with93ss -o /data -p 16 | sudo tee run_igblast.out
 
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets.fasta -n BXjan5_matcheswithss -o /data -p 16 | sudo tee run_igblast.out
 
 ## STEP 2B: INFERENCE OF V SEGMENT GENOTYPES (TIGGER)
      ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
@@ -204,6 +207,12 @@ docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/Cha
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_withss_parse-select.tab -x 0.0347 -n BXjan5_withss -o /data -p 16 | sudo tee run_clone.out
 
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_with93ss_parse-select.tab -x 0.0347 -n BXjan5_with93ss -o /data -p 16 | sudo tee run_clone.out
+
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_matcheswithss_parse-select.tab -x 0.0347 -n BXjan5_matcheswithss -o /data -p 16 | sudo tee run_clone.out
+
+aws s3 cp /mnt/data/changeo/BXjan5_matcheswithss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5_matcheswithss_clone-pass.tab 
+
+
 
 ————
 ## FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
