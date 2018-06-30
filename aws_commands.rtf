@@ -208,10 +208,11 @@ docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/Cha
 
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_with93ss_parse-select.tab -x 0.0347 -n BXjan5_with93ss -o /data -p 16 | sudo tee run_clone.out
 
+aws s3 cp /mnt/data/changeo/BXjan5_with93ss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5_with93ss_clone-pass.tab
+
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_matcheswithss_parse-select.tab -x 0.0347 -n BXjan5_matcheswithss -o /data -p 16 | sudo tee run_clone.out
 
 aws s3 cp /mnt/data/changeo/BXjan5_matcheswithss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5_matcheswithss_clone-pass.tab 
-
 
 
 ————
