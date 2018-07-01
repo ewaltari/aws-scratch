@@ -148,6 +148,8 @@ docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/cha
 
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets.fasta -n BXjan5_matcheswithss -o /data -p 16 | sudo tee run_igblast.out
 
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets_aligned.fasta -n BXjan5_alignedmatcheswithss -o /data -p 16 | sudo tee run_igblast.out
+
 ## STEP 2B: INFERENCE OF V SEGMENT GENOTYPES (TIGGER)
      ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
 TiggerV2.10_Genotype.R
@@ -214,6 +216,7 @@ docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/Cha
 
 aws s3 cp /mnt/data/changeo/BXjan5_matcheswithss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5_matcheswithss_clone-pass.tab 
 
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_alignedmatcheswithss_parse-select.tab -x 0.0347 -n BXjan5_alignedmatcheswithss -o /data -p 16 | sudo tee run_clone.out
 
 ————
 ## FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
