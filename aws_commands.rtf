@@ -56,6 +56,7 @@ aws s3 cp --recursive s3://eric.waltari-bucket/BX_miseq/presto/ /mnt/data/presto
 
 ## example to transfer one MiSeq run to aegea instance
 aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180128_M05295_0078_000000000-BJNBT/rawdata/presto/ /mnt/data/presto
+aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180629_M05295_0128_000000000-BNRF9/rawdata/ /mnt/data/presto
 
 ## basic: unzip fastq.gz files before running PRESTO
 gunzip *fastq.gz
@@ -94,6 +95,7 @@ docker stop <containerid> # kill it (gracefully)
 ## DOCKER COMMAND TO RUN PRESTO IN AEGEA
 docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/Undetermined_S0_L001_R2_001.fastq -2 /data/Undetermined_S0_L001_R1_001.fastq -j /data/primers_R2c.fasta -v data/primers_R1.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/apr18_full.yaml -n BXjan5 -o /data/BXjan_filter5 -p 16 | sudo tee run_presto.out
 
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX0525_1mPBMC_noenrich_HL_S3_R2_001.fastq -2 /data/BX0525_1mPBMC_noenrich_HL_S3_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX0525_1mnotenriched.yaml -n BX0525_1mnotenriched -o /data/BX0525_1mnotenriched -p 16 | sudo tee run_presto.out
 
 ## when each run is done (preferably before final step of zipping most intermediate files), transfer files back to s3
   ## three fastq outputs, and the .pdf report
@@ -148,7 +150,9 @@ docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/cha
 
 docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets.fasta -n BXjan5_matcheswithss -o /data -p 16 | sudo tee run_igblast.out
 
-docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets_aligned.fasta -n BXjan5_alignedmatcheswithss -o /data -p 16 | sudo tee run_igblast.out
+aws s3 cp s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets_fr4trimmed.fasta /mnt/data/changeo/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets_fr4trimmed.fasta
+
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/BXjan5-final_collapse-unique_nearmatches_min390bp_withtargets_fr4trimmed.fasta -n BXjan5_fr4trimmedmatcheswithss -o /data -p 16 | sudo tee run_igblast.out
 
 ## STEP 2B: INFERENCE OF V SEGMENT GENOTYPES (TIGGER)
      ## FULL DATASET RETURNED ERRORS - NOW USING LOCAL R SCRIPT
@@ -216,8 +220,9 @@ docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/Cha
 
 aws s3 cp /mnt/data/changeo/BXjan5_matcheswithss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5_matcheswithss_clone-pass.tab 
 
-docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_alignedmatcheswithss_parse-select.tab -x 0.0347 -n BXjan5_alignedmatcheswithss -o /data -p 16 | sudo tee run_clone.out
+docker run -v /mnt/data/changeo:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/BXjan5_fr4trimmedmatcheswithss_parse-select.tab -x 0.0347 -n BXjan5_fr4trimmedmatcheswithss -o /data -p 16 | sudo tee run_clone.out
 
+aws s3 cp /mnt/data/changeo/BXjan5_fr4trimmedmatcheswithss_clone-pass.tab s3://eric.waltari-bucket/BX_miseq/changeo/output/BXjan5_fr4trimmedmatcheswithss_clone-pass.tab 
 ————
 ## FOR MAKING NETWORKS (IN CHANGEO) THAT INCLUDE SEQUENCES FOUND VIA SORTING, MAKE FASTA FILES OF SUCH SEQUENCES THEN RUN:
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/changeoV3.7_IgBLASTV1.7.sh -s /data/moreINFandAD2.fasta -n moreInfAandAD2 -o /data -p 4 | tee run_igblast.out
