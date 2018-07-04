@@ -97,6 +97,11 @@ docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/pres
 
 docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX0525_1mPBMC_noenrich_HL_S3_R2_001.fastq -2 /data/BX0525_1mPBMC_noenrich_HL_S3_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX0525_1mnotenriched.yaml -n BX0525_1mnotenriched -o /data/BX0525_1mnotenriched -p 16 | sudo tee run_presto.out
 
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX0525_1mPBMC_HL_S2_R2_001.fastq -2 /data/BX0525_1mPBMC_HL_S2_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX0525_1menriched.yaml -n BX0525_1menriched -o /data/BX0525_1menriched -p 16 | sudo tee run_presto.out
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX0525_30mPBMC_HL_S1_R2_001.fastq -2 /data/BX0525_30mPBMC_HL_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX0525_30m.yaml -n BX0525_30m -o /data/BX0525_30m -p 16 | sudo tee run_presto.out
+
+
 ## when each run is done (preferably before final step of zipping most intermediate files), transfer files back to s3
   ## three fastq outputs, and the .pdf report
   ## examples:
