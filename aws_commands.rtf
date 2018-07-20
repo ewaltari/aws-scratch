@@ -67,7 +67,7 @@ chmod a+x *.sh
 ### DOCKER COMMANDS
 docker pull kleinstein/immcantation:1.10.0 
 ## MARCH 1.7.0, APRIL 1.8.0, LATE APRIL 1.9.0, Late May 1.10.0 (http://immcantation.readthedocs.io/en/latest/docker/news.html)
-
+  ## July 1.10.2
 ## basic: first go to root directory before running docker
 
 ## to get docker shell to see files on Aegea
@@ -253,6 +253,46 @@ aws s3 cp s3://eric.waltari-bucket/BX_miseq/presto/presto-abseq.sh /mnt/data/pre
 
 ## can use the MaskPrimers.py script above also to search for single cell sequences!!
 ## more to come here...
+
+
+————
+##############################################################
+### IGPHYML COMMANDS
+##############################################################
+
+https://changeo.readthedocs.io/en/latest/examples/igphyml.html
+
+## this is in development, not in current version of Changeo
+docker pull kleinstein/immcantation:1.10.2 
+  ## actually not in docker yet! (only in test version of Changeo)
+
+## I have installed igphyml on waltari-immcantation2
+ ## first commands use a new Changeo command called BuildTrees.py that reformats the Changeo .tab file...
+
+## on waltari-immcantation2, just created new file called BuildTrees.py - copied actual Python code from https://bitbucket.org/kleinstein/changeo/src/9cb4041a5d5f/bin/?at=default
+## then had to copy it into usr/bin (alias /bin) while in immcantation bash
+sudo cp data/examples/BuildTrees.py bin/BuildTrees.py
+## now can run BuildTrees.py while in Immcantation bash (BUT NOTE THAT igphyml IS ACTUALLY ONLY ON INSTANCE, NOT IN IMMCANTATION BASH)
+BuildTrees.py -d example.tab --outname ex --log ex.log --collapse
+## THIS DOESN'T WORK - THERE ARE ERRORS IN TRYING TO RUN BuildTrees.py still
+  ## THINK ONLY WORKAROUND NOW IS TO INSTALL CHANGEO (AND DEPENDENCIES) ON waltari-immcantation2
+    ## alternately, wait until newer docker container version has this updated version of Changeo!!!
+    
+
+from changeo.Defaults import default_format, default_v_field, default_j_field, default_junction_field
+from changeo.Commandline import CommonHelpFormatter, checkArgs, getCommonArgParser, parseCommonArgs
+from changeo.Distance import distance_models, calcDistances, formClusters
+from changeo.IO import countDbFile, getDbFields, getFormatOperators, getOutputHandle, \
+                       AIRRWriter, ChangeoWriter
+from changeo.Multiprocessing import DbResult, feedDbQueue, processDbQueue
+
+
+from changeo.Defaults import default_format
+from changeo.IO import splitFileName, getDbFields, getFormatOperators, getOutputHandle
+from changeo.Alignment import getRegions
+from changeo.Commandline import CommonHelpFormatter, checkArgs, getCommonArgParser, parseCommonArgs
+
+
 
 ————
 ##############################################################
