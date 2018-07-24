@@ -101,17 +101,6 @@ docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/pres
 
 docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX0525_30mPBMC_HL_S1_R2_001.fastq -2 /data/BX0525_30mPBMC_HL_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX0525_30m.yaml -n BX0525_30m -o /data/BX0525_30m -p 16 | sudo tee run_presto.out
 
-### July24 latest run (bead tests)
-
-aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180720_M05295_0140_000000000-BTMHH/rawdata/ /mnt/data/presto
-mkdir d4d5_beadtests
-nano jul18_BX0525_30m.yaml
-
-docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.2 /data/presto-abseq.sh -1 /data/d4_1mPBMC_HL_S1_R2_001.fastq -2 /data/d4_1mPBMC_HL_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d4_1m.yaml -n d4_1m -o /data/d4d5_beadtests -p 16 | sudo tee run_presto.out
-
-docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.2 /data/presto-abseq.sh -1 /data/d4_1mPBMC_beads_HL_S2_R2_001.fastq -2 /data/d4_1mPBMC_beads_HL_S2_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d4_1m_beads.yaml -n d4_1m_beads -o /data/d4d5_beadtests -p 16 | sudo tee run_presto.out
-
-docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.2 /data/presto-abseq.sh -1 /data/d5_1mPBMC_beads_HL_S3_R2_001.fastq -2 /data/d5_1mPBMC_beads_HL_S3_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d5_1m_beads.yaml -n d5_1m_beads -o /data/d4d5_beadtests -p 16 | sudo tee run_presto.out
 
 ## when each run is done (preferably before final step of zipping most intermediate files), transfer files back to s3
   ## three fastq outputs, and the .pdf report
@@ -136,6 +125,35 @@ aws s3 cp /mnt/data/changeo s3://eric.waltari-bucket/BX_miseq/changeo/output/ --
 ## note when a run is done, the remaining fastqs are not gzipped - also in /logs folder, .tab files are not zipped either
 gzip *.fastq
 gzip *.tab
+
+
+### July24 latest run (bead tests)
+
+aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180720_M05295_0140_000000000-BTMHH/rawdata/ /mnt/data/presto
+mkdir d4d5_beadtests
+nano jul18_BX0525_30m.yaml
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.2 /data/presto-abseq.sh -1 /data/d4_1mPBMC_HL_S1_R2_001.fastq -2 /data/d4_1mPBMC_HL_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d4_1m.yaml -n d4_1m -o /data/d4d5_beadtests -p 16 | sudo tee run_presto.out
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.2 /data/presto-abseq.sh -1 /data/d4_1mPBMC_beads_HL_S2_R2_001.fastq -2 /data/d4_1mPBMC_beads_HL_S2_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d4_1m_beads.yaml -n d4_1m_beads -o /data/d4d5_beadtests2 -p 16 | sudo tee run_presto.out
+## note 1.10.2 might be leading to pdf generation errors??
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/d5_1mPBMC_beads_HL_S3_R2_001.fastq -2 /data/d5_1mPBMC_beads_HL_S3_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d5_1m_beads.yaml -n d5_1m_beads -o /data/d4d5_beadtests3 -p 16 | sudo tee run_presto.out
+
+aws s3 cp /mnt/data/presto/d4d5_beadtests/d4_1m-final_collapse-unique_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m-final_collapse-unique_primers-pass.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests/d4_1m-final_collapse-unique_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m-final_collapse-unique_primers-fail.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests/d4_1m-final_collapse-unique_atleast-2_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m-final_collapse-unique_atleast-2_primers-pass.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests/d4_1m-final_collapse-unique_atleast-2_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m-final_collapse-unique_atleast-2_primers-fail.fastq
+
+aws s3 cp /mnt/data/presto/d4d5_beadtests2/d4_1m_beads-final_collapse-unique_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m_beads-final_collapse-unique_primers-pass.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests2/d4_1m_beads-final_collapse-unique_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m_beads-final_collapse-unique_primers-fail.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests2/d4_1m_beads-final_collapse-unique_atleast-2_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m_beads-final_collapse-unique_atleast-2_primers-pass.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests2/d4_1m_beads-final_collapse-unique_atleast-2_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d4_1m_beads-final_collapse-unique_atleast-2_primers-fail.fastq
+
+aws s3 cp /mnt/data/presto/d4d5_beadtests3/d5_1m_beads-final_collapse-unique_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d5_1m_beads-final_collapse-unique_primers-pass.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests3/d5_1m_beads-final_collapse-unique_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d5_1m_beads-final_collapse-unique_primers-fail.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests3/d5_1m_beads-final_collapse-unique_atleast-2_primers-pass.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d5_1m_beads-final_collapse-unique_atleast-2_primers-pass.fastq
+aws s3 cp /mnt/data/presto/d4d5_beadtests3/d5_1m_beads-final_collapse-unique_atleast-2_primers-fail.fastq s3://eric.waltari-bucket/BX_miseq/presto/output/d5_1m_beads-final_collapse-unique_atleast-2_primers-fail.fastq
 
 ————
 ## SECOND STEPS OF IMMCANTATION: CHANGEO
