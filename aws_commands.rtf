@@ -159,6 +159,21 @@ aws s3 cp /mnt/data/presto/d4d5_beadtests1/report/d4d5_beadtests_d4_07242018.pdf
 aws s3 cp /mnt/data/presto/d4d5_beadtests2b/report/d4d5_beadtests_d4_0724b2018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/dd4d5_beadtests_d4_0724b2018.pdf
 aws s3 cp /mnt/data/presto/d4d5_beadtests3/report/d4d5_beadtests_d5_07252018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/dd4d5_beadtests_d5_07252018.pdf
 
+
+aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180726_M05295_0144_000000000-BTPG3/rawdata/ /mnt/data/presto
+mkdir BX_beadtests1
+nano jul18_d5_1m_beads.yaml
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX_3mPBMC_HL_S2_R2_001.fastq -2 /data/BX_3mPBMC_HL_S2_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX_3m.yaml -n BX_3m -o /data/BX_beadtests1 -p 16 | sudo tee run_presto.out
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX_3mPBMC_beads_HL_S3_R2_001.fastq -2 /data/BX_3mPBMC_beads_HL_S3_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_BX_3m_beads.yaml -n BX_3m_beads -o /data/BX_beadtests3 -p 16 | sudo tee run_presto.out
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/d5_1mPBMC_HL_S1_R2_001.fastq -2 /data/d5_1mPBMC_HL_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d5_1m.yaml -n d5_1m -o /data/BX_beadtests2 -p 16 | sudo tee run_presto.out
+
+
+aws s3 cp /mnt/data/presto/BX_beadtests1 s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.fastq"
+aws s3 cp /mnt/data/presto/BX_beadtests1/report/BX_beadtests_BX_0525_07302018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/BX_beadtests_BX_0525_07302018.pdf
+
 ————
 ## SECOND STEPS OF IMMCANTATION: CHANGEO
 ## STEP 2A: IGBLAST
