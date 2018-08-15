@@ -170,7 +170,6 @@ docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/pres
 
 docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/d5_1mPBMC_HL_S1_R2_001.fastq -2 /data/d5_1mPBMC_HL_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/jul18_d5_1m.yaml -n d5_1m -o /data/BX_beadtests2 -p 16 | sudo tee run_presto.out
 
-
 aws s3 cp /mnt/data/presto/BX_beadtests1 s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.fastq"
 aws s3 cp /mnt/data/presto/BX_beadtests1/report/BX_beadtests_BX_0525_07302018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/BX_beadtests_BX_0525_07302018.pdf
 
@@ -179,6 +178,49 @@ aws s3 cp /mnt/data/presto/BX_beadtests2/report/BX_beadtests_d5_0731b2018.pdf s3
 
 aws s3 cp /mnt/data/presto/BX_beadtests3 s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.fastq"
 aws s3 cp /mnt/data/presto/BX_beadtests3/report/BX_beadtests_BX_0525_0731b2018.pdf s3://eric.waltari-bucket/BX_miseq/presto/output/BX_beadtests_BX_3M_beads_0525_07312018.pdf
+
+aws s3 cp /mnt/data/presto/BX_3mPBMC_HL_S2_R2_001.fastq s3://eric.waltari-bucket/BX_miseq/presto/BX_3mPBMC_HL_S2_R2_001.fastq
+aws s3 cp /mnt/data/presto/BX_3mPBMC_HL_S2_R1_001.fastq s3://eric.waltari-bucket/BX_miseq/presto/BX_3mPBMC_HL_S2_R1_001.fastq
+fastqs/180810_M05295_0151_000000000-BTPNM/rawdata/BX_6mPBMC_stimulated_S2_R2_001.fastq.gz
+fastqs/180810_M05295_0151_000000000-BTPNM/rawdata/BX_2mPBMC_notenriched_S1_R1_001.fastq.gz
+fastqs/180810_M05295_0151_000000000-BTPNM/rawdata/BX_1mPBMC_IgGonly_large_S3_R1_001.fastq.gz
+
+aws s3 cp --recursive s3://czbiohub-seqbot/fastqs/180810_M05295_0151_000000000-BTPNM/rawdata/ /mnt/data/presto
+mkdir BX0525_6m_stimulated
+mkdir BX0525_2m_notenriched
+mkdir BX0525_2m_IgG
+nano jul18_BX0525_30m.yaml
+
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX_6mPBMC_stimulated_S2_R2_001.fastq -2 /data/BX_6mPBMC_stimulated_S2_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/aug18_BX0525_6m_stimulated.yaml -n BX0525_6m_stimulated -o /data/BX0525_6m_stimulated -p 16 | sudo tee run_presto.out
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX_2mPBMC_notenriched_S1_R2_001.fastq -2 /data/BX_2mPBMC_notenriched_S1_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/aug18_BX0525_2m_notenriched.yaml -n BX0525_2m_notenriched -o /data/BX0525_2m_notenriched -p 16 | sudo tee run_presto.out
+
+docker run -v /mnt/data/presto:/data:z kleinstein/immcantation:1.10.0 /data/presto-abseq.sh -1 /data/BX_1mPBMC_IgGonly_large_S3_R2_001.fastq -2 /data/BX_1mPBMC_IgGonly_large_S3_R1_001.fastq -j /data/primers_R2hl.fasta -v data/primers_R1hl.fasta -r /usr/local/share/igblast/fasta/imgt_human_ig_v.fasta -y /data/aug18_BX0525_2m_IgG.yaml -n BX0525_2m_IgG_large -o /data/BX0525_2m_IgG_large -p 16 | sudo tee run_presto.out
+
+
+aws s3 cp /mnt/data/presto/BX0525_2m_notenriched s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.fastq"
+aws s3 cp /mnt/data/presto/BX0525_2m_notenriched/report s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.pdf"
+aws s3 cp /mnt/data/presto/BX0525_6m_stimulated s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.fastq"
+aws s3 cp /mnt/data/presto/BX0525_6m_stimulated/report s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.pdf"
+aws s3 cp /mnt/data/presto/BX0525_2m_IgG_large s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.fastq"
+aws s3 cp /mnt/data/presto/BX0525_2m_IgG_large/report s3://eric.waltari-bucket/BX_miseq/presto/output/ --recursive --exclude "*" --include "*.pdf"
+
+
+cp /mnt/data/presto/BX0525_2m_notenriched/BX0525_2m_notenriched-final_collapse-unique_atleast-2_primers-pass.fastq /mnt/data/changeo/BX0525_2m_notenriched-final_collapse-unique_atleast-2_primers-pass.fastq
+cp /mnt/data/presto/BX0525_2m_notenriched/BX0525_2m_notenriched-final_collapse-unique_atleast-2_primers-fail.fastq /mnt/data/changeo/BX0525_2m_notenriched-final_collapse-unique_atleast-2_primers-fail.fastq
+
+cp /mnt/data/presto/BX0525_6m_stimulated/BX0525_6m_stimulated-final_collapse-unique_atleast-2_primers-pass.fastq /mnt/data/changeo/BX0525_6m_stimulated-final_collapse-unique_atleast-2_primers-pass.fastq
+cp /mnt/data/presto/BX0525_6m_stimulated/BX0525_6m_stimulated-final_collapse-unique_atleast-2_primers-fail.fastq /mnt/data/changeo/BX0525_6m_stimulated-final_collapse-unique_atleast-2_primers-fail.fastq
+
+cp /mnt/data/presto/BX0525_2m_IgG_large/BX0525_2m_IgG_large-final_collapse-unique_atleast-2_primers-pass.fastq /mnt/data/changeo/BX0525_2m_IgG_large-final_collapse-unique_atleast-2_primers-pass.fastq
+cp /mnt/data/presto/BX0525_2m_IgG_large/BX0525_2m_IgG_large-final_collapse-unique_atleast-2_primers-fail.fastq /mnt/data/changeo/BX0525_2m_IgG_large-final_collapse-unique_atleast-2_primers-fail.fastq
+
+cat BX0525_2m_notenriched-final_collapse-unique_atleast-2_primers-pass.fastq BX0525_2m_notenriched-final_collapse-unique_atleast-2_primers-fail.fastq > BX0525_2m_notenriched-final_collapse-unique_atleast-2.fastq
+
+cat BX0525_6m_stimulated-final_collapse-unique_atleast-2_primers-pass.fastq BX0525_6m_stimulated-final_collapse-unique_atleast-2_primers-fail.fastq > BX0525_6m_stimulated-final_collapse-unique_atleast-2.fastq
+
+cat BX0525_2m_IgG_large-final_collapse-unique_atleast-2_primers-pass.fastq BX0525_2m_IgG_large-final_collapse-unique_atleast-2_primers-fail.fastq > BX0525_2m_IgG_large-final_collapse-unique_atleast-2.fastq
 ————
 ## SECOND STEPS OF IMMCANTATION: CHANGEO
 ## STEP 2A: IGBLAST
@@ -288,6 +330,8 @@ docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1
 docker run -v $HOME/testing/2018mar_miseq_full:/data:z kleinstein/immcantation:1.10.0 /data/ChangeoV3.7_Clone.sh -d /data/moreInfAandAD2_parse-select.tab -x 0.0396 -n moreInfAandAD2 -o /data -p 4 | tee run_clone.out
 
 
+
+
 ————
 ##############################################################
 
@@ -345,7 +389,13 @@ from changeo.IO import splitFileName, getDbFields, getFormatOperators, getOutput
 from changeo.Alignment import getRegions
 from changeo.Commandline import CommonHelpFormatter, checkArgs, getCommonArgParser, parseCommonArgs
 
+————
+##############################################################
+##################### REFLOW COMMANDS ########################
+##############################################################
 
+
+reflow run bcell.rf -read1_file s3://eric.waltari-bucket/BX_miseq/presto/BX_3mPBMC_HL_S2_R2_001.fastq -read2_file s3://eric.waltari-bucket/BX_miseq/presto/BX_3mPBMC_HL_S2_R1_001.fastq -read1_primers s3://eric.waltari-bucket/BX_miseq/presto/primers_R2hl.fasta -read2_primers s3://eric.waltari-bucket/BX_miseq/presto/primers_R2hl.fasta -run_name BX_3m_0810test -results_bucket s3://eric.waltari-bucket/BX_miseq/presto/output/
 
 ————
 ##############################################################
