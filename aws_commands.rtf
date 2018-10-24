@@ -1,5 +1,94 @@
 AWS commands:
+##############################################################
+########## OCTOBER 2018 - REFLOW-IZED BCR PIPELINE ###########
+##############################################################
 
+## FIRST: install reflow on laptop, then create instance and install reflow there
+
+## TO INSTALL REFLOW:
+https://github.com/czbiohub/cupcakes/blob/master/2018/olgas_bioinformagician_tricks/002_how_to_be_a_bioinformagician_part02.ipynb
+
+## ALSO LOOK AT GERRY'S INSTRUCTIONS ON THE BCELL_PIPELINE GITHUB FOR BOTH REFLOW INSTALLATION INSTRUCTIONS AND GENERAL TIPS ON THE PIPLINE...
+https://github.com/czbiohub/bcell_pipeline
+
+## installation commands that I used on my laptop:
+go get github.com/grailbio/reflow     
+go install github.com/grailbio/reflow/cmd/releasereflow
+go get -u github.com/grailbio/reflow  
+AWS_SDK_LOAD_CONFIG=1 reflow setup-ec2 
+cd go/src/github.com/grailbio/reflow/cmd/reflow        
+go install
+go build
+reflow setup-ec2
+ssh-keygen
+AWS_SDK_LOAD_CONFIG=1 reflow setup-dynamodb-assoc czbiohub-reflow-quickstart
+
+## ALSO NEED TO MODIFY REFLOW CONFIG:
+at $HOME/.reflow/config.yaml		
+	increase diskspace from 250 to 950	
+	also add this instance type to list:
+	r4.4xlarge	## has 133GB of memory (double) but only 1.05 per hour vs .80 for m4.4xlarge
+  also change the path to reflow.pem in the config.yaml file - look toward bottom of file and change line to:
+https: httpsca,/home/ubuntu/.reflow/reflow.pem
+
+## CREATING AEGEA INSTANCE	FOR REFLOW, COPYING REFLOW FILES TO IT...
+		## To run on an ec2 instance, use aegea to launch the czbiohub-reflow packer image.
+aegea launch --iam-role S3fromEC2 --ami-tags Name=czbiohub-reflow -t t2.micro [yourname]-reflow aegea start [yourinstance]					
+   ## Copy your read fastqs and primers fastas to the reflow/ directory in this repo.
+   ## Then copy the entire repo to the launched instance using scp or aegea scp as the reflow/ directory. ssh into the instance.
+   ## You should now be able to run the pipeline. Be sure to aegea stop your instance when you are done using reflow.				
+
+## installation commands that I used:
+
+   ## first transfer reflow files from laptop to new reflow folder on aws
+aws s3 cp --recursive $HOME/.reflow/ s3://eric.waltari-bucket/reflow/.reflow
+
+aegea launch waltari-reflow --ami-tags Name=czbiohub-reflow --iam-role S3fromEC2 -t t2.micro
+aegea ssh ubuntu@waltari-reflow
+cd ..
+cd ..
+aws s3 cp --recursive s3://eric.waltari-bucket/reflow/.reflow/ /home/ubuntu/.reflow
+
+cd mnt/data
+mkdir reflow
+git clone https://github.com/czbiohub/bcell_pipeline
+
+		TO RUN REFLOW COMMANDS GO TO BCELL_PIPELINE/REFLOW FOLDER!					
+    
+########################
+## FOR A NEW MISEQ RUN - NEED TO UNZIP LOCALLY, THEN TRANSFER TO LOCAL AWS BUCKET
+
+	first download fastq.gz to laptop					
+	then unzip, then upload to local aws bucket					
+ 
+## REFLOW COMMANDS TO RUN PIPELINE
+  ## NOTE YOU NEED TO START A 'SCREEN' COMMAND SO YOU CAN THEN DETACH AND LET IT RUN IN THE BACKGROUND (OTHERWISE WILL CRASH IF DISCONNECTED)
+cd bcell_pipeline
+cd reflow
+git pull
+aegea ssh ubuntu@waltari-reflow   					
+	## cd to mnt/data/bcell_pipeline/reflow					
+git pull					
+screen					
+reflow run bcell.rf -read1_file s3://eric.waltari-bucket/BX_miseq/presto/d147_10m_stimulated_S2_R2_001.fastq -read2_file s3://eric.waltari-bucket/BX_miseq/presto/d147_10m_stimulated_S2_R1_001.fastq -read1_primers s3://eric.waltari-bucket/BX_miseq/presto/primers_R2hl.fasta -read2_primers s3://eric.waltari-bucket/BX_miseq/presto/primers_R1hl.fasta -run_name 20181023b_d147_10m_stimulated -results_bucket s3://eric.waltari-bucket/BX_miseq/presto/output/						
+
+reflow run bcell.rf -read1_file s3://eric.waltari-bucket/BX_miseq/presto/d147_10m_enriched_S1_R2_001.fastq -read2_file s3://eric.waltari-bucket/BX_miseq/presto/d147_10m_enriched_S1_R1_001.fastq -read1_primers s3://eric.waltari-bucket/BX_miseq/presto/primers_R2hl.fasta -read2_primers s3://eric.waltari-bucket/BX_miseq/presto/primers_R1hl.fasta -run_name 20181022b_d147_10m_enriched -results_bucket s3://eric.waltari-bucket/BX_miseq/presto/output/						
+	## then control-a and d
+
+## will say something like "detached from 18686.pts-2.waltari-reflow"
+
+## when done you should have a folder wherever you specified the results to go
+  ## there will be subfolders with each set of analyses (presto, changeo, tigger, alakazam, etc.)
+  ## you can transfer files from these folders back to your laptop like so:
+
+aws s3 cp --recursive s3://eric.waltari-bucket/BX_miseq/presto/output//20181022b_d147_10m_enriched/alakazam $HOME/immcantation_pipeline/stim_vs_nonstim/
+aws s3 cp --recursive s3://eric.waltari-bucket/BX_miseq/presto/output//20181023b_d147_10m_stimulated/alakazam $HOME/immcantation_pipeline/stim_vs_nonstim/20181023b_d147_10m_stimulated/alakazam/20181023b_d147_10m_stimulated/alakazam
+
+  
+————
+##############################################################
+################ OLDER DOCKER + AEGEA COMMANDS ###############
+##############################################################
 ### CREATE INSTANCE
 ## the specops instance image has aws, git BUT NOT DOCKER
 
