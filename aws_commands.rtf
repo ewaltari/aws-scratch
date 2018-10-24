@@ -28,8 +28,6 @@ at $HOME/.reflow/config.yaml
 	increase diskspace from 250 to 950	
 	also add this instance type to list:
 	r4.4xlarge	## has 133GB of memory (double) but only 1.05 per hour vs .80 for m4.4xlarge
-  also change the path to reflow.pem in the config.yaml file - look toward bottom of file and change line to:
-https: httpsca,/home/ubuntu/.reflow/reflow.pem
 
 ## CREATING AEGEA INSTANCE	FOR REFLOW, COPYING REFLOW FILES TO IT...
 		## To run on an ec2 instance, use aegea to launch the czbiohub-reflow packer image.
@@ -49,6 +47,10 @@ cd ..
 cd ..
 aws s3 cp --recursive s3://eric.waltari-bucket/reflow/.reflow/ /home/ubuntu/.reflow
 
+## need to make final change to reflow config file on the instance:
+cd .., then cd .., then cd home/ubuntu/.reflow
+  ## change the path to reflow.pem in the config.yaml file - look toward bottom of file and change line to:
+https: httpsca,/home/ubuntu/.reflow/reflow.pem
 cd mnt/data
 mkdir reflow
 git clone https://github.com/czbiohub/bcell_pipeline
